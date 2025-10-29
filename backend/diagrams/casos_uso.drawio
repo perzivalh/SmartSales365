@@ -1,0 +1,189 @@
+<mxfile host="app.diagrams.net" modified="2025-10-28T21:10:00Z" agent="5.0 (Windows)" version="22.0.2" type="device">
+  <diagram id="CU1" name="CU1 Gestionar usuarios y roles">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="CU1-AdminUI" value="&lt;&lt;Boundary&gt;&gt;&#xa;AdminUI&#xa;--&#xa;+mostrarListaUsuarios()&#xa;+capturarUsuario()&#xa;+capturarRol()" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="210" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU1-Controller" value="&lt;&lt;Control&gt;&gt;&#xa;UsuarioController&#xa;--&#xa;+crearUsuario(datos)&#xa;+actualizarUsuario(id, datos)&#xa;+eliminarUsuario(id)&#xa;+asignarRol(usuarioId, rolId)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="280" y="140" width="230" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU1-Usuario" value="&lt;&lt;Model&gt;&gt;&#xa;Usuario&#xa;--&#xa;-id: UUID&#xa;-nombre: string&#xa;-email: string&#xa;-estado: EstadoUsuario&#xa;--&#xa;+activar()&#xa;+desactivar()&#xa;+actualizarPerfil(datos)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="540" y="90" width="230" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU1-Rol" value="&lt;&lt;Model&gt;&gt;&#xa;Rol&#xa;--&#xa;-id: UUID&#xa;-nombre: string&#xa;-permisos: Set&lt;string&gt;&#xa;--&#xa;+agregarPermiso(permiso)&#xa;+removerPermiso(permiso)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="540" y="290" width="230" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU1-AdminUI-Controller" value="gestiona" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU1-AdminUI" target="CU1-Controller">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU1-Controller-Usuario" value="mantiene" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU1-Controller" target="CU1-Usuario">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU1-Controller-Rol" value="asigna roles" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU1-Controller" target="CU1-Rol">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU1-Usuario-Rol" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="CU1-Usuario" target="CU1-Rol">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="CU2" name="CU2 Autenticarse en el sistema">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="CU2-AuthUI" value="&lt;&lt;Boundary&gt;&gt;&#xa;AuthUI&#xa;--&#xa;+capturarCredenciales()&#xa;+mostrarError(mensaje)&#xa;+mostrarSesionActiva(usuario)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="220" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU2-Controller" value="&lt;&lt;Control&gt;&gt;&#xa;AuthController&#xa;--&#xa;+autenticar(credenciales)&#xa;+generarTokens(usuario)&#xa;+refrescarToken(refreshToken)&#xa;+cerrarSesion(usuarioId)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="290" y="140" width="240" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU2-Usuario" value="&lt;&lt;Model&gt;&gt;&#xa;Usuario&#xa;--&#xa;-id: UUID&#xa;-email: string&#xa;-passwordHash: string&#xa;-estado: EstadoUsuario&#xa;--&#xa;+validarPassword(password)&#xa;+registrarIntentoFallido()" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="560" y="60" width="240" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU2-JWT" value="&lt;&lt;Model&gt;&gt;&#xa;JWTProvider&#xa;--&#xa;-secretKey: string&#xa;-expiracionAccess: int&#xa;-expiracionRefresh: int&#xa;--&#xa;+emitirAccessToken(usuario)&#xa;+emitirRefreshToken(usuario)&#xa;+validarToken(token)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="560" y="260" width="240" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU2-Refresh" value="&lt;&lt;Model&gt;&gt;&#xa;RefreshToken&#xa;--&#xa;-token: string&#xa;-usuarioId: UUID&#xa;-expiracion: datetime&#xa;-revocado: bool&#xa;--&#xa;+esValido()&#xa;+marcarRevocado()" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="560" y="540" width="240" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU2-AuthUI-Controller" value="solicita login" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU2-AuthUI" target="CU2-Controller">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU2-Controller-Usuario" value="valida credenciales" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU2-Controller" target="CU2-Usuario">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU2-Controller-JWT" value="emite tokens" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU2-Controller" target="CU2-JWT">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU2-JWT-Refresh" value="" style="endArrow=block;endFill=1;html=1;dashed=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU2-JWT" target="CU2-Refresh">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="CU3" name="CU3 Recuperar contrase&#241;a">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="CU3-RecoveryUI" value="&lt;&lt;Boundary&gt;&gt;&#xa;RecoveryUI&#xa;--&#xa;+solicitarRecuperacion(email)&#xa;+mostrarConfirmacion()&#xa;+capturarNuevaContrasena()" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="230" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU3-Controller" value="&lt;&lt;Control&gt;&gt;&#xa;PasswordRecoveryController&#xa;--&#xa;+iniciarRecuperacion(email)&#xa;+validarToken(token)&#xa;+restablecerContrasena(token, password)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="300" y="140" width="260" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU3-Usuario" value="&lt;&lt;Model&gt;&gt;&#xa;Usuario&#xa;--&#xa;-id: UUID&#xa;-email: string&#xa;-passwordHash: string&#xa;-estado: EstadoUsuario&#xa;--&#xa;+actualizarPassword(hash)&#xa;+marcarRecuperacionActiva()" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="590" y="70" width="240" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU3-Token" value="&lt;&lt;Model&gt;&gt;&#xa;RecoveryToken&#xa;--&#xa;-token: string&#xa;-usuarioId: UUID&#xa;-expiracion: datetime&#xa;-usado: bool&#xa;--&#xa;+esVigente()&#xa;+marcarUsado()" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="590" y="290" width="240" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU3-EmailService" value="&lt;&lt;Model&gt;&gt;&#xa;EmailService&#xa;--&#xa;-remitente: string&#xa;-plantillaRecuperacion: string&#xa;--&#xa;+enviarRecuperacion(destinatario, token)&#xa;+enviarConfirmacion(destinatario)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="590" y="520" width="260" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU3-RecoveryUI-Controller" value="solicita recuperacion" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU3-RecoveryUI" target="CU3-Controller">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU3-Controller-Usuario" value="verifica usuario" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU3-Controller" target="CU3-Usuario">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU3-Controller-Token" value="genera token" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU3-Controller" target="CU3-Token">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU3-Controller-Email" value="envia correo" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU3-Controller" target="CU3-EmailService">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU3-Token-Usuario" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="CU3-Token" target="CU3-Usuario">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="CU4" name="CU4 Gestionar productos y categorias">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="CU4-UI" value="&lt;&lt;Boundary&gt;&gt;&#xa;ProductAdminUI&#xa;--&#xa;+capturarDatosProducto()&#xa;+mostrarCatalogo()&#xa;+subirImagenes()" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="240" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU4-Controller" value="&lt;&lt;Control&gt;&gt;&#xa;ProductController&#xa;--&#xa;+crearProducto(datos)&#xa;+actualizarProducto(id, datos)&#xa;+eliminarProducto(id)&#xa;+gestionarCategoria(datos)&#xa;+actualizarInventario(id, stock)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="320" y="140" width="280" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU4-Producto" value="&lt;&lt;Model&gt;&gt;&#xa;Producto&#xa;--&#xa;-id: UUID&#xa;-nombre: string&#xa;-precio: decimal&#xa;-estado: EstadoProducto&#xa;-imagenes: List&lt;string&gt;&#xa;--&#xa;+agregarImagen(url)&#xa;+actualizarPrecio(monto)&#xa;+marcarInactivo()" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="630" y="40" width="270" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU4-Categoria" value="&lt;&lt;Model&gt;&gt;&#xa;Categoria&#xa;--&#xa;-id: UUID&#xa;-nombre: string&#xa;-descripcion: string&#xa;--&#xa;+agregarProducto(productoId)&#xa;+removerProducto(productoId)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="630" y="340" width="260" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU4-Inventario" value="&lt;&lt;Model&gt;&gt;&#xa;Inventario&#xa;--&#xa;-productoId: UUID&#xa;-stockDisponible: int&#xa;-stockComprometido: int&#xa;--&#xa;+incrementar(cantidad)&#xa;+decrementar(cantidad)&#xa;+reservar(cantidad)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="630" y="620" width="260" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU4-UI-Controller" value="gestiona catalogo" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU4-UI" target="CU4-Controller">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU4-Controller-Producto" value="administra producto" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU4-Controller" target="CU4-Producto">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU4-Controller-Categoria" value="clasifica" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU4-Controller" target="CU4-Categoria">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU4-Controller-Inventario" value="actualiza stock" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU4-Controller" target="CU4-Inventario">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU4-Producto-Categoria" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="CU4-Producto" target="CU4-Categoria">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU4-Producto-Inventario" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="CU4-Producto" target="CU4-Inventario">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="CU5" name="CU5 Gestionar clientes">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="CU5-UI" value="&lt;&lt;Boundary&gt;&gt;&#xa;ClientAdminUI&#xa;--&#xa;+capturarCliente()&#xa;+mostrarDetalleCliente(clienteId)&#xa;+registrarInteraccion()" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="250" height="230" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU5-Controller" value="&lt;&lt;Control&gt;&gt;&#xa;ClientController&#xa;--&#xa;+registrarCliente(datos)&#xa;+actualizarCliente(id, datos)&#xa;+registrarInteraccion(clienteId, datos)&#xa;+consultarHistorial(clienteId)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="330" y="140" width="280" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU5-Cliente" value="&lt;&lt;Model&gt;&gt;&#xa;Cliente&#xa;--&#xa;-id: UUID&#xa;-nombre: string&#xa;-email: string&#xa;-segmento: string&#xa;--&#xa;+actualizarContacto(datos)&#xa;+cambiarSegmento(segmento)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="640" y="60" width="260" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU5-Historial" value="&lt;&lt;Model&gt;&gt;&#xa;HistorialCliente&#xa;--&#xa;-clienteId: UUID&#xa;-ultimaCompra: datetime&#xa;-valorTotal: decimal&#xa;-ultimaInteraccion: datetime&#xa;--&#xa;+registrarVenta(monto, fecha)&#xa;+actualizarUltimaInteraccion(fecha)" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="640" y="300" width="280" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU5-Interaccion" value="&lt;&lt;Model&gt;&gt;&#xa;Interaccion&#xa;--&#xa;-id: UUID&#xa;-clienteId: UUID&#xa;-tipo: string&#xa;-fecha: datetime&#xa;-observaciones: string&#xa;--&#xa;+resumir()" style="shape=umlClass;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="640" y="590" width="280" height="250" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU5-UI-Controller" value="gestiona clientes" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU5-UI" target="CU5-Controller">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU5-Controller-Cliente" value="administra registro" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU5-Controller" target="CU5-Cliente">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU5-Controller-Historial" value="actualiza historial" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU5-Controller" target="CU5-Historial">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU5-Controller-Interaccion" value="documenta interacciones" style="endArrow=block;endFill=1;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="CU5-Controller" target="CU5-Interaccion">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU5-Cliente-Historial" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="CU5-Cliente" target="CU5-Historial">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="CU5-Cliente-Interaccion" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="CU5-Cliente" target="CU5-Interaccion">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

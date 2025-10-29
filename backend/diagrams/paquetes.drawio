@@ -1,0 +1,42 @@
+<mxfile host="app.diagrams.net" modified="2025-10-28T21:25:00Z" agent="5.0 (Windows)" version="22.0.2" type="device">
+  <diagram id="packages" name="Paquetes">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="P1" value="&lt;&lt;Package&gt;&gt; P1 AGU&#xa;Autenticaci&#243;n y Gesti&#243;n de Usuarios&#xa;--&#xa;*UsuarioService&#xa;*AuthController&#xa;*RoleManager&#xa;*JWTProvider&#xa;*CustomerDirectory" style="shape=umlPackage;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="120" width="250" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="P2" value="&lt;&lt;Package&gt;&gt; P2 GCP&#xa;Gesti&#243;n de Cat&#225;logo y Productos&#xa;--&#xa;*ProductController&#xa;*CatalogService&#xa;*InventoryService&#xa;*PricingRules&#xa;*AssetStorage" style="shape=umlPackage;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="360" y="120" width="260" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="P3" value="&lt;&lt;Package&gt;&gt; P3 PVT&#xa;Proceso de Ventas y Transacciones&#xa;--&#xa;*CartService&#xa;*CheckoutController&#xa;*OrderManager&#xa;*PaymentGateway&#xa;*InvoiceGenerator" style="shape=umlPackage;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="400" width="280" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="P4" value="&lt;&lt;Package&gt;&gt; P4 Reportes&#xa;Reportes Inteligentes&#xa;--&#xa;*AnalyticsEngine&#xa;*DashboardBuilder&#xa;*PredictiveModeling&#xa;*ReportScheduler&#xa;*DataExporter" style="shape=umlPackage;whiteSpace=wrap;html=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="380" y="420" width="280" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="depP2P1" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="P2" target="P1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="190" y="250" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="depP3P1" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="P3" target="P1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="depP3P2" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="P3" target="P2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="depP4P1" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="P4" target="P1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="depP4P2" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="P4" target="P2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="depP4P3" value="" style="endArrow=open;endFill=0;dashed=1;html=1;strokeWidth=2;" edge="1" parent="1" source="P4" target="P3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,50 @@
+﻿.topbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #ffffff;
+}
+
+.breadcrumb {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.linkButton {
+  border: 1px solid #cbd5f5;
+  background-color: #ffffff;
+  color: #1d4ed8;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.linkButton:hover {
+  background-color: #eef2ff;
+}
+
+.logoutButton {
+  border: none;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.logoutButton:hover {
+  opacity: 0.9;
+}

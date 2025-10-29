@@ -1,0 +1,44 @@
+﻿.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.input,
+.select,
+.textarea {
+  border: 1px solid #cbd5f5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.error {
+  color: #dc2626;
+  font-size: 0.85rem;
+}
+
+.helper {
+  font-size: 0.85rem;
+  color: #64748b;
+}

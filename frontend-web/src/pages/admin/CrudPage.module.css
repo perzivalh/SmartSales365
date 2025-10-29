@@ -1,0 +1,284 @@
+﻿.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 1.7rem;
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+  max-width: 520px;
+}
+
+.primaryButton {
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryButton:hover {
+  filter: brightness(0.95);
+}
+
+.alert {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 12px 24px rgba(15, 31, 61, 0.05);
+}
+
+.listCard {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.tableThumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 10px rgba(15, 31, 61, 0.08);
+}
+
+.tablePlaceholder {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.table thead {
+  background-color: #f1f5f9;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.empty {
+  text-align: center;
+  padding: 32px;
+  color: #64748b;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.button {
+  border: none;
+  background: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.danger {
+  color: #dc2626;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.imageField {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.imageLabel {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.fileInput {
+  display: none;
+}
+
+.imageDropzone {
+  border: 1px dashed rgba(148, 196, 255, 0.7);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  background-color: rgba(236, 254, 255, 0.45);
+  color: #0369a1;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.imageDropzone small {
+  font-weight: 500;
+  color: #64748b;
+}
+
+.imagePreview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.imagePreview img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 196, 255, 0.6);
+  box-shadow: 0 18px 30px rgba(15, 31, 61, 0.12);
+}
+
+.imagePreviewActions {
+  display: flex;
+  gap: 12px;
+}
+
+.imageChangeButton,
+.imageRemoveButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.imageChangeButton {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #ffffff;
+}
+
+.imageRemoveButton {
+  background-color: rgba(248, 113, 113, 0.12);
+  color: #b91c1c;
+}
+
+.submit {
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancel {
+  border: none;
+  background-color: rgba(15, 31, 61, 0.04);
+  color: #1e293b;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 18px;
+  }
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.searchInput {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #cbd5f5;
+  min-width: 220px;
+}
+
+.filterSelect {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #cbd5f5;
+  min-width: 160px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.statusActive {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.statusInactive {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background-color: #eef2ff;
+  color: #3730a3;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+

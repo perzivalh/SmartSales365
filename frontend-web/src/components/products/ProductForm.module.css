@@ -1,0 +1,65 @@
+﻿.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancelButton {
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 1px solid #cbd5f5;
+  background-color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submitButton {
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  min-width: 160px;
+}
+
+.section {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toggle input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+}
+
