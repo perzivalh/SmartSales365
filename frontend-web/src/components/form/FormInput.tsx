@@ -23,9 +23,9 @@ export const FormInput = forwardRef<HTMLInputElement, Props>(function FormInput(
 
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-sm font-semibold text-white">{label}</span>
+      <span className="text-sm font-semibold text-slate-600">{label}</span>
       <input ref={ref} className={inputClass} {...props} />
-      {helperText ? <span className="text-xs text-white/70">{helperText}</span> : null}
+      {helperText ? <span className="text-xs text-slate-500">{helperText}</span> : null}
       {error ? <span className="text-xs font-semibold text-red-500">{error}</span> : null}
     </label>
   );
