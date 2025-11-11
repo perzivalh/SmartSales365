@@ -190,6 +190,17 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "false").lower() == "true"
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "false").lower() == "true"
 DEFAULT_FROM_EMAIL = os.getenv("EMAIL_FROM", EMAIL_HOST_USER)
 
+# Debug print to verify SMTP config in different environments
+print(
+    "[SMTP CONFIG]",
+    f"HOST={EMAIL_HOST}",
+    f"PORT={EMAIL_PORT}",
+    f"USER={EMAIL_HOST_USER}",
+    f"TLS={EMAIL_USE_TLS}",
+    f"SSL={EMAIL_USE_SSL}",
+    flush=True,
+)
+
 FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost:5173")
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
