@@ -1,4 +1,4 @@
-import type { MessagePayload } from "firebase/messaging";
+import type { MessagePayload, Messaging } from "firebase/messaging";
 import { getToken, onMessage } from "firebase/messaging";
 
 import { getFirebaseMessagingInstance } from "../lib/firebase";
@@ -61,7 +61,7 @@ export async function registerPushNotifications(): Promise<string | null> {
 
 export function listenToForegroundNotifications(handler: (payload: MessagePayload) => void): () => void {
   let unsubscribe: (() => void) | null = null;
-  void getFirebaseMessagingInstance().then((messaging) => {
+  void getFirebaseMessagingInstance().then((messaging: Messaging | null) => {
     if (!messaging) {
       return;
     }
