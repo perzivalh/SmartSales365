@@ -422,7 +422,7 @@ export function HomePage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="max-w-2xl">
             <h2 className="text-3xl font-semibold text-white">Recomendaciones para ti</h2>
-            <p className="mt-1 text-sm text-slate-300">Descubre sugerencias actualizadas segun tu actividad.</p>
+            <p className="mt-1 text-sm text-slate-300">{recommendationSummaryText}</p>
           </div>
           {recommendationBadgeLabel && isAuthenticated ? (
             <span className="inline-flex items-center rounded-full border border-primary/35 bg-primary/15 px-4 py-1 text-xs font-semibold uppercase tracking-[0.32em] text-primary">
