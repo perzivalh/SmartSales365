@@ -34,11 +34,20 @@ export type ProductQuery = {
   ordering?: string;
   page?: number;
   page_size?: number;
+  ids?: string[];
+  has_promotion?: boolean;
 };
 
 export async function getProducts(query: ProductQuery = {}): Promise<PaginatedResponse<Product>> {
+  const params: Record<string, unknown> = { ...query };
+  if (query.ids) {
+    params.ids = query.ids.join(",");
+  }
+  if (typeof query.has_promotion !== "undefined") {
+    params.has_promotion = query.has_promotion ? "true" : "false";
+  }
   const response = await api.get<PaginatedResponse<Product>>("/products/", {
-    params: query,
+    params,
   });
   return response.data;
 }

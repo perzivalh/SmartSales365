@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { resendVerification, verifyEmail } from "../../api/auth";
 import { FormInput } from "../../components/form/FormInput";
-import styles from "./LoginPage.module.css";
 
 const schema = z.object({
   email: z.string().email("Introduce un email valido."),
@@ -18,6 +17,12 @@ type FormValues = z.infer<typeof schema>;
 type LocationState = {
   email?: string;
 };
+
+const pageWrapperClass = "flex min-h-screen items-center justify-center px-4 py-16";
+const cardClass =
+  "w-full max-w-md space-y-8 rounded-[32px] border border-white/10 bg-white/95 p-10 text-slate-800 shadow-[0_40px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl";
+const submitButtonClass =
+  "flex h-12 w-full items-center justify-center rounded-full bg-red-600 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-lg shadow-red-600/40 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-70";
 
 export function VerifyEmailPage() {
   const location = useLocation();
@@ -70,23 +75,27 @@ export function VerifyEmailPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.card}>
-        <div>
-          <h1 className={styles.title}>
-            Smart<span style={{ color: "#475569" }}>Sales365</span>
+    <div className={pageWrapperClass}>
+      <div className={cardClass}>
+        <div className="space-y-2 text-center">
+          <h1 className="text-3xl font-semibold text-slate-900">
+            Smart<span className="text-primary">Sales365</span>
           </h1>
-          <p className={styles.subtitle}>Verifica tu correo electronico</p>
+          <p className="text-sm font-medium text-slate-500">Verifica tu correo electronico</p>
         </div>
 
-        {errorMessage ? <div className={styles.errorBanner}>{errorMessage}</div> : null}
+        {errorMessage ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+            {errorMessage}
+          </div>
+        ) : null}
         {successMessage ? (
-          <div className={styles.errorBanner} style={{ color: "#15803d", background: "#dcfce7" }}>
+          <div className="rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-600">
             {successMessage}
           </div>
         ) : null}
 
-        <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <form className="space-y-5" onSubmit={onSubmit}>
           <FormInput
             label="Email"
             type="email"
@@ -94,23 +103,16 @@ export function VerifyEmailPage() {
             {...register("email")}
             error={errors.email?.message}
           />
-          <FormInput
-            label="Codigo"
-            placeholder="000000"
-            maxLength={6}
-            {...register("code")}
-            error={errors.code?.message}
-          />
-          <button type="submit" className={styles.button} disabled={isSubmitting}>
+          <FormInput label="Codigo" placeholder="000000" maxLength={6} {...register("code")} error={errors.code?.message} />
+          <button type="submit" className={submitButtonClass} disabled={isSubmitting}>
             {isSubmitting ? "Verificando..." : "Verificar"}
           </button>
         </form>
 
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "12px" }}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="button"
-            className={styles.button}
-            style={{ background: "#1d4ed8" }}
+            className="flex h-12 flex-1 items-center justify-center rounded-full border border-slate-300 text-sm font-semibold uppercase tracking-[0.3em] text-slate-600 transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
             onClick={handleResend}
             disabled={isResending}
           >
@@ -118,8 +120,7 @@ export function VerifyEmailPage() {
           </button>
           <button
             type="button"
-            className={styles.button}
-            style={{ background: "#0f172a" }}
+            className="flex h-12 flex-1 items-center justify-center rounded-full border border-slate-900 bg-slate-900 text-sm font-semibold uppercase tracking-[0.3em] text-white transition hover:bg-slate-800"
             onClick={() => navigate("/login")}
           >
             Volver al login

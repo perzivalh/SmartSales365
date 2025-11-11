@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 from datetime import timedelta
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 from dotenv import load_dotenv
 
@@ -16,6 +17,11 @@ load_dotenv()
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "changeme-in-production")
 DEBUG = os.getenv("DEBUG", "true").lower() == "true"
 ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "*").split(",") if host.strip()]
+
+if "*" not in ALLOWED_HOSTS:
+  for host in {"localhost", "127.0.0.1", "[::1]", "192.168.0.10"}:
+    if host not in ALLOWED_HOSTS:
+      ALLOWED_HOSTS.append(host)
 
 
 INSTALLED_APPS = [
@@ -33,6 +39,10 @@ INSTALLED_APPS = [
     "authx",
     "catalog",
     "customers",
+    "orders",
+    "reports",
+    "activity",
+    "notifications",
 ]
 
 MIDDLEWARE = [
@@ -44,6 +54,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "activity.middleware.AuditLogMiddleware",
 ]
 
 ROOT_URLCONF = "smartsales365.urls"
@@ -66,8 +77,36 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "smartsales365.wsgi.application"
 
+def _database_config_from_connection_string(connection_url: str) -> dict[str, object]:
+    parsed = urlparse(connection_url)
+    if parsed.scheme not in {"postgres", "postgresql"}:
+        raise ValueError("DB_CONNECTION_STRING must use the postgres/postgresql scheme.")
+
+    options = {
+        key: values[-1]
+        for key, values in parse_qs(parsed.query).items()
+        if values and values[-1] is not None
+    }
+
+    config: dict[str, object] = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": (parsed.path or "").lstrip("/") or os.getenv("DB_NAME", "smartsales365"),
+        "USER": parsed.username or os.getenv("DB_USER", "postgres"),
+        "PASSWORD": parsed.password or os.getenv("DB_PASS", "postgres"),
+        "HOST": parsed.hostname or os.getenv("DB_HOST", "localhost"),
+        "PORT": str(parsed.port or os.getenv("DB_PORT", "5432")),
+    }
+    if options:
+        config["OPTIONS"] = options
+    return config
+
+
+db_connection_string = os.getenv("DB_CONNECTION_STRING")
+
 DATABASES = {
-    "default": {
+    "default": _database_config_from_connection_string(db_connection_string)
+    if db_connection_string
+    else {
         "ENGINE": "django.db.backends.postgresql",
         "HOST": os.getenv("DB_HOST", "localhost"),
         "PORT": os.getenv("DB_PORT", "5432"),
@@ -116,8 +155,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=14),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=180),
     "TOKEN_OBTAIN_SERIALIZER": "authx.serializers.EmailAwareTokenObtainPairSerializer",
 }
 
@@ -131,9 +170,15 @@ SPECTACULAR_SETTINGS = {
     ],
 }
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-]
+cors_origin_env = os.getenv("CORS_ALLOWED_ORIGINS")
+
+CORS_ALLOWED_ORIGINS = (
+    [origin.strip() for origin in cors_origin_env.split(",") if origin.strip()]
+    if cors_origin_env
+    else [
+        "http://localhost:5173",
+    ]
+)
 CORS_ALLOW_CREDENTIALS = True
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -158,3 +203,14 @@ AWS_S3_UPLOAD_ACL = os.getenv("AWS_S3_UPLOAD_ACL", "public-read")
 if AWS_S3_BUCKET and not AWS_S3_PUBLIC_DOMAIN:
     region_segment = f".{AWS_REGION}" if AWS_REGION else ""
     AWS_S3_PUBLIC_DOMAIN = f"https://{AWS_S3_BUCKET}.s3{region_segment}.amazonaws.com"
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+DEFAULT_CURRENCY = os.getenv("DEFAULT_CURRENCY", "USD").upper()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+FIREBASE_PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID")
+FIREBASE_CLIENT_EMAIL = os.getenv("FIREBASE_CLIENT_EMAIL")
+FIREBASE_PRIVATE_KEY = os.getenv("FIREBASE_PRIVATE_KEY", "")

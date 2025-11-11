@@ -8,9 +8,12 @@ import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 from django.conf import settings
 from django.db import transaction
+from decimal import Decimal
+
 from rest_framework import serializers
 
-from .models import Category, Product, ProductFeature, ProductImage
+from .models import Category, Product, ProductFeature, ProductImage, Promotion
+from .promotion_service import PromotionPricingEngine, build_promotion_pricing_map
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +43,8 @@ class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source="category.name", read_only=True)
     images = ProductImageSerializer(many=True, required=False)
     features = ProductFeatureSerializer(many=True, required=False)
+    active_promotion = serializers.SerializerMethodField()
+    final_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -62,6 +67,8 @@ class ProductSerializer(serializers.ModelSerializer):
             "features",
             "created_at",
             "updated_at",
+            "active_promotion",
+            "final_price",
         ]
         read_only_fields = ["id", "cover_image_url", "created_at", "updated_at"]
 
@@ -187,6 +194,110 @@ class ProductSerializer(serializers.ModelSerializer):
             features = self._prepare_features(features_raw)
             self._replace_nested(instance, images, features)
         return instance
+
+    def _get_pricing(self, obj: Product):
+        engine: PromotionPricingEngine | None = self.context.get("promotion_pricing")
+        if engine:
+            return engine.get(obj)
+        single_engine = PromotionPricingEngine([obj])
+        return single_engine.get(obj)
+
+    def get_active_promotion(self, obj: Product):
+        pricing = self._get_pricing(obj)
+        if not pricing:
+            return None
+        return pricing.as_public_dict()
+
+    def get_final_price(self, obj: Product) -> str:
+        pricing = self._get_pricing(obj)
+        if pricing:
+            return str(pricing.final_price)
+        return str(obj.price)
+
+
+class PromotionSerializer(serializers.ModelSerializer):
+    categories = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), many=True, required=False)
+    products = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), many=True, required=False)
+    category_names = serializers.SerializerMethodField()
+    product_names = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Promotion
+        fields = [
+            "id",
+            "name",
+            "description",
+            "discount_type",
+            "discount_value",
+            "scope",
+            "categories",
+            "products",
+            "category_names",
+            "product_names",
+            "start_date",
+            "end_date",
+            "is_active",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at", "category_names", "product_names"]
+
+    def validate(self, attrs):
+        scope = attrs.get("scope") or getattr(self.instance, "scope", Promotion.Scope.GLOBAL)
+        categories = attrs.get("categories")
+        products = attrs.get("products")
+        discount_type = attrs.get("discount_type") or getattr(self.instance, "discount_type", Promotion.DiscountType.PERCENT)
+        discount_value: Decimal = attrs.get("discount_value") or getattr(self.instance, "discount_value", Decimal("0"))
+        start = attrs.get("start_date") or getattr(self.instance, "start_date", None)
+        end = attrs.get("end_date") or getattr(self.instance, "end_date", None)
+
+        if discount_value <= 0:
+            raise serializers.ValidationError({"discount_value": "El valor del descuento debe ser mayor a 0."})
+        if discount_type == Promotion.DiscountType.PERCENT and discount_value > 100:
+            raise serializers.ValidationError({"discount_value": "El porcentaje no puede superar el 100%."})
+
+        if end and start and end <= start:
+            raise serializers.ValidationError({"end_date": "La fecha de fin debe ser posterior al inicio."})
+
+        if scope == Promotion.Scope.CATEGORY and not categories:
+            raise serializers.ValidationError({"categories": "Selecciona al menos una categoria."})
+        if scope == Promotion.Scope.PRODUCT and not products:
+            raise serializers.ValidationError({"products": "Selecciona al menos un producto."})
+        return attrs
+
+    def create(self, validated_data):
+        categories = validated_data.pop("categories", [])
+        products = validated_data.pop("products", [])
+        promotion = Promotion.objects.create(**validated_data)
+        if promotion.scope == Promotion.Scope.CATEGORY and categories:
+            promotion.categories.set(categories)
+        if promotion.scope == Promotion.Scope.PRODUCT and products:
+            promotion.products.set(products)
+        return promotion
+
+    def update(self, instance, validated_data):
+        categories = validated_data.pop("categories", None)
+        products = validated_data.pop("products", None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        if categories is not None:
+            if instance.scope == Promotion.Scope.CATEGORY:
+                instance.categories.set(categories)
+            else:
+                instance.categories.clear()
+        if products is not None:
+            if instance.scope == Promotion.Scope.PRODUCT:
+                instance.products.set(products)
+            else:
+                instance.products.clear()
+        return instance
+
+    def get_category_names(self, obj: Promotion):
+        return [category.name for category in obj.categories.all()]
+
+    def get_product_names(self, obj: Promotion):
+        return [product.name for product in obj.products.all()]
 
 
 

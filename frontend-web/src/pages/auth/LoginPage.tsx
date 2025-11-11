@@ -1,5 +1,5 @@
-﻿import axios from "axios";
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { FormInput } from "../../components/form/FormInput";
 import { useAuth } from "../../hooks/useAuth";
-import styles from "./LoginPage.module.css";
 
 const schema = z.object({
   email: z.string().email("Introduce un email valido."),
@@ -18,13 +17,21 @@ type FormValues = z.infer<typeof schema>;
 
 type LocationState = {
   from?: Location;
+  message?: string;
 };
+
+const pageWrapperClass = "flex min-h-screen items-center justify-center px-4 py-16";
+const cardClass =
+  "w-full max-w-md space-y-8 rounded-[32px] border border-white/10 bg-white/95 p-10 text-slate-800 shadow-[0_40px_60px_rgba(15,23,42,0.35)] backdrop-blur-xl";
+const submitButtonClass =
+  "flex h-12 w-full items-center justify-center rounded-full bg-red-600 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-lg shadow-red-600/40 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-70";
 
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, sessionExpired, clearSessionExpired } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [sessionMessage, setSessionMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -38,11 +45,26 @@ export function LoginPage() {
     },
   });
 
+  useEffect(() => {
+    if (sessionExpired) {
+      setSessionMessage("Tu sesion expiro. Inicia sesion nuevamente para continuar.");
+      clearSessionExpired();
+    }
+  }, [sessionExpired, clearSessionExpired]);
+
+  useEffect(() => {
+    const state = location.state as LocationState | null;
+    if (state?.message) {
+      setSessionMessage(state.message);
+    }
+  }, [location.state]);
+
   const onSubmit = handleSubmit(async (values) => {
     setErrorMessage(null);
+    setSessionMessage(null);
     try {
       await login(values.email, values.password);
-      const redirectTo = (location.state as LocationState | null)?.from?.pathname ?? "/admin/products";
+      const redirectTo = (location.state as LocationState | null)?.from?.pathname ?? "/";
       navigate(redirectTo, { replace: true });
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -81,18 +103,28 @@ export function LoginPage() {
   });
 
   return (
-    <div className={styles.page}>
-      <div className={styles.card}>
-        <div>
-          <h1 className={styles.title}>
-            Smart<span style={{ color: "#475569" }}>Sales365</span>
+    <div className={pageWrapperClass}>
+      <div className={cardClass}>
+        <div className="space-y-2 text-center">
+          <h1 className="text-3xl font-semibold text-slate-900">
+            Smart<span className="text-primary">Sales365</span>
           </h1>
-          <p className={styles.subtitle}>Bienvenido de nuevo</p>
+          <p className="text-sm font-medium text-slate-500">Bienvenido de nuevo</p>
         </div>
 
-        {errorMessage ? <div className={styles.errorBanner}>{errorMessage}</div> : null}
+        {sessionMessage ? (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700">
+            {sessionMessage}
+          </div>
+        ) : null}
 
-        <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        {errorMessage ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+            {errorMessage}
+          </div>
+        ) : null}
+
+        <form className="space-y-5" onSubmit={onSubmit}>
           <FormInput
             label="Email"
             placeholder="admin@demo.com"
@@ -109,15 +141,21 @@ export function LoginPage() {
             {...register("password")}
             error={errors.password?.message}
           />
-          <button type="submit" className={styles.button} disabled={isSubmitting}>
+          <button type="submit" className={submitButtonClass} disabled={isSubmitting}>
             {isSubmitting ? "Ingresando..." : "Iniciar sesion"}
           </button>
         </form>
 
-        <div style={{ marginTop: "16px", textAlign: "center" }}>
-          <Link to="/forgot-password" style={{ color: "#dc2626", fontWeight: 600 }}>
+        <div className="text-center space-y-2">
+          <Link to="/forgot-password" className="text-sm font-semibold text-red-600 transition hover:text-red-500">
             Olvidaste tu contrasena?
           </Link>
+          <p className="text-sm text-slate-600">
+            No tienes una cuenta?
+            <Link to="/register" className="ml-1 font-semibold text-primary transition hover:text-primary-dark">
+              Crear cuenta
+            </Link>
+          </p>
         </div>
       </div>
     </div>

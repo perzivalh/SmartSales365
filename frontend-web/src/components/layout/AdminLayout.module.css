@@ -1,8 +1,9 @@
-﻿.wrapper {
+.wrapper {
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background-color: #f5f7fb;
+  background: radial-gradient(circle at top, #010b17, #020817 65%, #01030a);
+  position: relative;
 }
 
 .content {
@@ -10,12 +11,51 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  position: relative;
 }
 
 .main {
   flex: 1;
-  padding: 32px 40px;
-  background-color: #f5f7fb;
   overflow-y: auto;
+  background: transparent;
 }
 
+.mainInner {
+  width: min(1280px, 100%);
+  margin: 0 auto;
+  padding: 32px 32px 48px;
+}
+
+.sidebarBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(1, 5, 16, 0.72);
+  backdrop-filter: blur(4px);
+  z-index: 50;
+}
+
+@media (max-width: 1280px) {
+  .mainInner {
+    padding: 28px 24px 40px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .wrapper {
+    flex-direction: column;
+  }
+
+  .content {
+    width: 100%;
+  }
+
+  .mainInner {
+    padding: 24px 20px 36px;
+  }
+}
+
+@media (max-width: 640px) {
+  .mainInner {
+    padding: 20px 16px 32px;
+  }
+}

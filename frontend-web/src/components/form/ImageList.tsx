@@ -1,7 +1,5 @@
-﻿import type { ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
 import { useMemo } from "react";
-
-import styles from "./ImageList.module.css";
 
 export type ImageItem = {
   id?: string;
@@ -21,6 +19,10 @@ type Props = {
 };
 
 const TEN_MB = 10 * 1024 * 1024;
+const primaryButtonClass =
+  "rounded-full bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-lg shadow-primary/30 transition hover:bg-primary/90";
+const neutralButtonClass =
+  "rounded-full border border-white/20 px-3 py-2 text-xs font-semibold text-white/80 transition hover:border-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-40";
 
 function resequence(images: ImageItem[]): ImageItem[] {
   return images.map((image, index) => ({ ...image, position: index }));
@@ -128,61 +130,71 @@ export function ImageList({ images, onChange, error }: Props) {
   }
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.header}>
-        <span className={styles.label}>Imagenes del producto</span>
-        <button type="button" className={styles.addButton} onClick={handleAdd}>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="text-sm font-semibold text-white">Imagenes del producto</span>
+        <button type="button" className={primaryButtonClass} onClick={handleAdd}>
           Anadir imagen
         </button>
       </div>
 
-      <div className={styles.list}>
+      <div className="flex flex-col gap-4">
         {images.map((image, index) => {
           const previewSource = image.previewUrl ?? image.url;
           return (
-            <div key={image.id ?? index} className={styles.card}>
-              <div className={styles.cardContent}>
-                <div className={styles.preview}>
-                  {previewSource ? <img src={previewSource} alt={`Imagen ${index + 1}`} /> : <span>Sin imagen</span>}
+            <div key={image.id ?? index} className="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-sm shadow-black/20">
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <div className="flex h-40 w-full items-center justify-center overflow-hidden rounded-2xl border border-dashed border-white/15 bg-white/5 text-sm font-semibold text-white/70 sm:w-48">
+                  {previewSource ? (
+                    <img src={previewSource} alt={`Imagen ${index + 1}`} className="h-full w-full object-cover" />
+                  ) : (
+                    <span>Sin imagen</span>
+                  )}
                 </div>
 
-                <div className={styles.details}>
-                  <div className={styles.fileRow}>
-                    <label className={styles.fileButton}>
+                <div className="flex flex-1 flex-col gap-4">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <label className="relative inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-lg shadow-primary/30 transition hover:bg-primary/90">
                       {previewSource ? "Cambiar imagen" : "Seleccionar imagen"}
-                      <input type="file" accept="image/*" onChange={(event) => handleFileChange(index, event)} />
+                      <input type="file" accept="image/*" className="absolute inset-0 h-full w-full cursor-pointer opacity-0" onChange={(event) => handleFileChange(index, event)} />
                     </label>
-                    <div className={styles.metaInfo}>
+                    <div className="flex flex-col text-sm text-white/70">
                       <span>{image.mime_type ?? image.file?.type ?? "-"}</span>
                       <span>{formatFileSize(image.size_bytes ?? image.file?.size ?? undefined)}</span>
                     </div>
                   </div>
 
-                  <div className={styles.controls}>
-                    <label className={styles.coverToggle}>
+                  <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-white/80">
+                    <label className="flex items-center gap-2">
                       <input
                         type="radio"
                         name="coverImage"
                         checked={image.is_cover}
                         onChange={() => handleToggleCover(index)}
+                        className="h-4 w-4 text-primary focus:ring-primary"
                       />
                       Portada
                     </label>
 
-                    <div className={styles.moveGroup}>
-                      <button type="button" onClick={() => handleMove(index, -1)} disabled={index === 0}>
+                    <div className="inline-flex items-center gap-2">
+                      <button type="button" onClick={() => handleMove(index, -1)} disabled={index === 0} className={neutralButtonClass}>
                         Subir
                       </button>
                       <button
                         type="button"
                         onClick={() => handleMove(index, 1)}
                         disabled={index === images.length - 1}
+                        className={neutralButtonClass}
                       >
                         Bajar
                       </button>
                     </div>
 
-                    <button type="button" className={styles.removeButton} onClick={() => handleRemove(index)}>
+                    <button
+                      type="button"
+                      className="rounded-full border border-red-400/60 px-3 py-2 text-xs font-semibold text-red-300 transition hover:bg-red-500/10"
+                      onClick={() => handleRemove(index)}
+                    >
                       Eliminar
                     </button>
                   </div>
@@ -194,12 +206,11 @@ export function ImageList({ images, onChange, error }: Props) {
       </div>
 
       {hasOversizedImage ? (
-        <div className={styles.warning}>Una o mas imagenes superan los 10MB. Reduce el tamano antes de guardar.</div>
+        <div className="rounded-2xl border border-amber-400/50 bg-amber-500/15 px-4 py-3 text-sm text-amber-200">
+          Una o mas imagenes superan los 10MB. Reduce el tamano antes de guardar.
+        </div>
       ) : null}
-      {error ? <div className={styles.error}>{error}</div> : null}
+      {error ? <div className="text-sm font-semibold text-red-400">{error}</div> : null}
     </div>
   );
 }
-
-
-

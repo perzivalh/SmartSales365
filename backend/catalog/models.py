@@ -3,9 +3,12 @@ from __future__ import annotations
 
 import uuid
 
-from django.core.validators import MinValueValidator, RegexValidator
+from decimal import Decimal
+
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
-from django.db.models import CheckConstraint, Q
+from django.db.models import CheckConstraint, Q, F
+from django.utils import timezone
 
 
 class Category(models.Model):
@@ -94,3 +97,67 @@ class ProductFeature(models.Model):
 
     def __str__(self) -> str:
         return self.label
+
+
+class Promotion(models.Model):
+    class DiscountType(models.TextChoices):
+        PERCENT = "PERCENT", "Porcentaje"
+        AMOUNT = "AMOUNT", "Monto fijo"
+
+    class Scope(models.TextChoices):
+        GLOBAL = "GLOBAL", "Global"
+        CATEGORY = "CATEGORY", "Categoria"
+        PRODUCT = "PRODUCT", "Producto"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=160)
+    description = models.TextField(blank=True)
+    discount_type = models.CharField(max_length=10, choices=DiscountType.choices, default=DiscountType.PERCENT)
+    discount_value = models.DecimalField(max_digits=8, decimal_places=2, validators=[MinValueValidator(Decimal("0.01"))])
+    scope = models.CharField(max_length=16, choices=Scope.choices, default=Scope.GLOBAL)
+    categories = models.ManyToManyField(Category, related_name="promotions", blank=True)
+    products = models.ManyToManyField(Product, related_name="promotions", blank=True)
+    start_date = models.DateTimeField(default=timezone.now)
+    end_date = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Promocion"
+        verbose_name_plural = "Promociones"
+        constraints = [
+            CheckConstraint(check=Q(discount_value__gt=0), name="promotion_discount_gt_zero"),
+            CheckConstraint(
+                check=Q(discount_type="PERCENT", discount_value__lte=100)
+                | Q(discount_type="AMOUNT"),
+                name="promotion_percent_lte_100",
+            ),
+            CheckConstraint(
+                check=Q(end_date__gt=F("start_date")) | Q(end_date__isnull=True),
+                name="promotion_end_after_start",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return self.name
+
+    def is_current(self, moment: timezone.datetime | None = None) -> bool:
+        if not self.is_active:
+            return False
+        now = moment or timezone.now()
+        if self.start_date and self.start_date > now:
+            return False
+        if self.end_date and self.end_date < now:
+            return False
+        return True
+
+    def applies_to_product(self, product: Product) -> bool:
+        if self.scope == self.Scope.GLOBAL:
+            return True
+        if self.scope == self.Scope.CATEGORY and product.category_id:
+            return self.categories.filter(id=product.category_id).exists()
+        if self.scope == self.Scope.PRODUCT:
+            return self.products.filter(id=product.id).exists()
+        return False

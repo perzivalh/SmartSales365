@@ -1,17 +1,42 @@
-﻿.sidebar {
-  width: 240px;
-  background-color: #0f1f3d;
+.sidebar {
+  width: 260px;
+  background: linear-gradient(165deg, #0f1f3d, #07142b);
   color: #f8fafc;
   display: flex;
   flex-direction: column;
-  padding: 32px 20px;
+  padding: 32px 24px;
   min-height: 100vh;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 28px;
 }
 
 .brand {
   font-weight: 700;
-  font-size: 1.4rem;
-  margin-bottom: 32px;
+  font-size: 1.35rem;
+}
+
+.closeButton {
+  display: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.closeButton:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .navList {
@@ -28,22 +53,68 @@
   color: inherit;
   display: block;
   padding: 12px 16px;
-  border-radius: 10px;
+  border-radius: 12px;
   font-weight: 500;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .navLink:hover {
   background-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
 }
 
 .active {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
 }
 
 .footer {
   font-size: 0.8rem;
   opacity: 0.6;
   margin-top: auto;
+  text-align: center;
 }
 
+.sidebarMobile {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: min(320px, 78vw);
+  max-width: 360px;
+  transform: translateX(-100%);
+  z-index: 60;
+  box-shadow: 0 30px 90px rgba(2, 6, 23, 0.7);
+  padding: 28px 24px 36px;
+  background: radial-gradient(circle at top, #122449, #060f22);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sidebarMobile .closeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebarOpen {
+  transform: translateX(0);
+}
+
+.sidebarHidden {
+  transform: translateX(-100%);
+}
+
+@media (max-width: 640px) {
+  .sidebarMobile {
+    width: min(300px, 82vw);
+    padding: 24px 20px 32px;
+  }
+
+  .brand {
+    font-size: 1.2rem;
+  }
+
+  .closeButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

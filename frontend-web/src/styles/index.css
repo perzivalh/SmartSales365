@@ -1,31 +1,64 @@
-﻿:root {
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #0f172a;
-  background-color: #f5f7fb;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color: #f3f8ff;
+    background-color: #061327;
+  }
+
+  body {
+    @apply min-h-screen bg-[#061327] text-slate-100 font-display m-0;
+    background-image: linear-gradient(180deg, #061327 0%, #041024 65%, #050d1f 100%);
+  }
+
+  a {
+    @apply text-inherit no-underline;
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  select,
+  option {
+    font-family: "Poppins", "Inter", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", sans-serif !important;
+  }
+
+  select {
+    @apply text-sm font-medium;
+    background-color: rgba(8, 26, 51, 0.15);
+    color: #f8fafc;
+  }
+
+  option {
+    color: #0f172a;
+    background-color: #ffffff;
+  }
+
+  table {
+    @apply border-collapse;
+  }
 }
 
-* {
-  box-sizing: border-box;
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  background-color: #f5f7fb;
+.thin-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-button {
-  font-family: inherit;
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
 }
-
-table {
-  border-collapse: collapse;
-}
-

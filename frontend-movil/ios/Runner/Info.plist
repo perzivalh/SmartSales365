@@ -45,5 +45,18 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Necesitamos acceso a la camara para pagos y comprobaciones de seguridad.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Permite adjuntar evidencia visual del pedido.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Necesitamos permisos para guardar comprobantes.</string>
 </dict>
 </plist>

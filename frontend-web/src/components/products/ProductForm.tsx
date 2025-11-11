@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,7 +12,6 @@ import { FormInput } from "../form/FormInput";
 import { Select } from "../form/Select";
 import { Textarea } from "../form/Textarea";
 import { TagList } from "../form/TagList";
-import styles from "./ProductForm.module.css";
 
 const FEATURE_LIMIT = 20;
 
@@ -20,6 +19,12 @@ const numericFieldMessages = {
   positive: "El valor no puede ser negativo.",
   required: "Introduce un numero valido.",
 };
+
+const sectionClass = "space-y-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-lg shadow-black/20 text-white";
+const primaryButtonClass =
+  "h-12 rounded-full bg-primary px-6 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-lg shadow-primary/40 transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60";
+const secondaryButtonClass =
+  "h-12 rounded-full border border-white/25 px-6 text-sm font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:border-white hover:text-white disabled:cursor-not-allowed disabled:opacity-50";
 
 const imageSchema = z
   .object({
@@ -132,7 +137,7 @@ type ProductFormProps = {
   categories: Category[];
   defaultValues?: Partial<ProductFormValues>;
   submitLabel: string;
-  onSubmit: (payload: ProductPayload) => Promise<void> | void;
+  onSubmit: (payload: ProductPayload) => Promise<void>;
   onCancel: () => void;
 };
 
@@ -152,47 +157,30 @@ const emptyFormValues: ProductFormValues = {
   features: [],
 };
 
-function normalizeImages(images?: ImageItem[]): ImageItem[] {
-  if (!images || images.length === 0) {
+function normalizeImages(images?: ImageItem[] | null): ImageItem[] {
+  if (!Array.isArray(images)) {
     return [];
   }
-
-  const sanitized = images.map((image, index) => ({
-    id: image.id,
-    url: (image.url ?? "").trim(),
-    position: Number.isFinite(image.position) ? image.position : index,
-    is_cover: Boolean(image.is_cover),
-    mime_type: image.mime_type ?? undefined,
-    size_bytes: typeof image.size_bytes === "number" && Number.isFinite(image.size_bytes) ? image.size_bytes : undefined,
-  }));
-
-  const sorted = sanitized.slice().sort((a, b) => a.position - b.position);
-
-  const coverIndex = sorted.findIndex((image) => image.is_cover);
-  const finalCoverIndex = coverIndex >= 0 ? coverIndex : 0;
-
-  return sorted.map((image, index) => ({
-    ...image,
-    position: index,
-    is_cover: index === finalCoverIndex,
-  }));
+  return images
+    .map((image) => ({
+      ...image,
+      url: image.url ?? "",
+      mime_type: image.mime_type ?? undefined,
+      size_bytes: image.size_bytes ?? undefined,
+      previewUrl: image.previewUrl ?? null,
+      file: image.file ?? null,
+    }))
+    .filter((image) => image.url || image.previewUrl || image.file)
+    .map((image, index) => ({ ...image, position: index }));
 }
 
 function buildDefaultValues(overrides?: Partial<ProductFormValues>): ProductFormValues {
   if (!overrides) {
-    return {
-      ...emptyFormValues,
-      images: [],
-      features: [],
-    };
+    return emptyFormValues;
   }
-
   return {
-    category: overrides.category ?? emptyFormValues.category,
-    name: overrides.name ?? emptyFormValues.name,
-    sku: overrides.sku ?? emptyFormValues.sku,
-    short_description: overrides.short_description ?? emptyFormValues.short_description,
-    long_description: overrides.long_description ?? emptyFormValues.long_description,
+    ...emptyFormValues,
+    ...overrides,
     price: typeof overrides.price === "number" && Number.isFinite(overrides.price) ? overrides.price : emptyFormValues.price,
     stock: typeof overrides.stock === "number" && Number.isFinite(overrides.stock) ? overrides.stock : emptyFormValues.stock,
     width_cm:
@@ -220,7 +208,8 @@ function toProductPayload(values: ProductFormValues): ProductPayload {
     position: index,
     is_cover: image.is_cover,
     mime_type: image.mime_type ?? undefined,
-    size_bytes: typeof image.size_bytes === "number" && Number.isFinite(image.size_bytes) ? image.size_bytes : undefined,
+    size_bytes:
+      typeof image.size_bytes === "number" && Number.isFinite(image.size_bytes) ? image.size_bytes : image.file?.size ?? undefined,
   }));
 
   const features = values.features
@@ -323,10 +312,10 @@ export function ProductForm({ categories, defaultValues, submitLabel, onSubmit, 
   });
 
   return (
-    <form className={styles.form} onSubmit={submitForm} noValidate>
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Informacion basica</h3>
-        <div className={styles.grid}>
+    <form className="space-y-8" onSubmit={submitForm} noValidate>
+      <section className={sectionClass}>
+        <h3 className="text-xl font-semibold text-white">Informacion basica</h3>
+        <div className="grid gap-4 sm:grid-cols-2">
           <Select label="Categoria" {...register("category")} error={errors.category?.message}>
             <option value="">Selecciona una categoria</option>
             {categories.map((category) => (
@@ -357,14 +346,14 @@ export function ProductForm({ categories, defaultValues, submitLabel, onSubmit, 
           />
         </div>
 
-        <label className={styles.toggle}>
-          <input type="checkbox" {...register("is_active")} />
+        <label className="inline-flex items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white/80">
+          <input type="checkbox" className="h-4 w-4 text-primary focus:ring-primary" {...register("is_active")} />
           Publicar producto al guardar
         </label>
-      </div>
+      </section>
 
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Descripciones</h3>
+      <section className={sectionClass}>
+        <h3 className="text-xl font-semibold text-white">Descripciones</h3>
         <Textarea
           label="Descripcion corta"
           rows={3}
@@ -379,11 +368,11 @@ export function ProductForm({ categories, defaultValues, submitLabel, onSubmit, 
           {...register("long_description")}
           error={errors.long_description?.message}
         />
-      </div>
+      </section>
 
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>Dimensiones y envio</h3>
-        <div className={styles.grid}>
+      <section className={sectionClass}>
+        <h3 className="text-xl font-semibold text-white">Dimensiones y envio</h3>
+        <div className="grid gap-4 sm:grid-cols-3">
           <FormInput
             label="Ancho (cm)"
             type="number"
@@ -410,12 +399,12 @@ export function ProductForm({ categories, defaultValues, submitLabel, onSubmit, 
             error={errors.weight_kg?.message}
           />
         </div>
-      </div>
+      </section>
 
-      <div className={styles.section}>
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-          <h3 className={styles.sectionTitle}>Imagenes</h3>
-          <span style={{ fontSize: "0.85rem", color: "#64748b" }}>
+      <section className={sectionClass}>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-xl font-semibold text-white">Imagenes</h3>
+          <span className="text-xs font-semibold text-white/70">
             {imageValues.length === 1 ? "1 imagen cargada" : `${imageValues.length} imagenes cargadas`}
           </span>
         </div>
@@ -423,45 +412,29 @@ export function ProductForm({ categories, defaultValues, submitLabel, onSubmit, 
           control={control}
           name="images"
           render={({ field }) => (
-            <ImageList
-              images={field.value ?? []}
-              onChange={(items) => field.onChange(items)}
-              error={errors.images?.message}
-            />
+            <ImageList images={field.value ?? []} onChange={(items) => field.onChange(items)} error={errors.images?.message} />
           )}
         />
-      </div>
+      </section>
 
-      <div className={styles.section}>
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-          <h3 className={styles.sectionTitle}>Caracteristicas</h3>
-          <span style={{ fontSize: "0.85rem", color: "#64748b" }}>
+      <section className={sectionClass}>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-xl font-semibold text-white">Caracteristicas</h3>
+          <span className="text-xs font-semibold text-white/70">
             {featureValues.length}/{FEATURE_LIMIT} caracteristicas
           </span>
         </div>
         <TagList label="Lista de caracteristicas" values={featureValues} onChange={handleFeatureChange} error={errors.features?.message} />
-      </div>
+      </section>
 
-      <div className={styles.actions}>
-        <button type="button" className={styles.cancelButton} onClick={handleCancel} disabled={isSubmitting}>
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        <button type="button" className={secondaryButtonClass} onClick={handleCancel} disabled={isSubmitting}>
           Cancelar
         </button>
-        <button type="submit" className={styles.submitButton} disabled={isSubmitting || (!isDirty && !defaultValues)}>
+        <button type="submit" className={primaryButtonClass} disabled={isSubmitting || (!isDirty && !defaultValues)}>
           {isSubmitting ? "Guardando..." : submitLabel}
         </button>
       </div>
     </form>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
