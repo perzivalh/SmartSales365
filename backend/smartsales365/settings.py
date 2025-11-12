@@ -189,6 +189,12 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "false").lower() == "true"
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "false").lower() == "true"
 DEFAULT_FROM_EMAIL = os.getenv("EMAIL_FROM", EMAIL_HOST_USER)
+EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "30"))
+
+BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
+BREVO_SENDER_EMAIL = os.getenv("BREVO_SENDER_EMAIL", DEFAULT_FROM_EMAIL)
+BREVO_SENDER_NAME = os.getenv("BREVO_SENDER_NAME", "SmartSales365")
+BREVO_USE_SMTP_FALLBACK = os.getenv("BREVO_USE_SMTP_FALLBACK", "false").lower() == "true"
 
 # Debug print to verify SMTP config in different environments
 print(

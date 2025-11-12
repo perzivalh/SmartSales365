@@ -20,6 +20,8 @@ BREVO_API_KEY = getattr(settings, "BREVO_API_KEY", "")
 BREVO_SENDER_EMAIL = getattr(settings, "BREVO_SENDER_EMAIL", settings.DEFAULT_FROM_EMAIL)
 BREVO_SENDER_NAME = getattr(settings, "BREVO_SENDER_NAME", "SmartSales365")
 BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
+BREVO_HTTP_TIMEOUT = getattr(settings, "EMAIL_TIMEOUT", 20)
+BREVO_USE_SMTP_FALLBACK = getattr(settings, "BREVO_USE_SMTP_FALLBACK", False)
 
 
 def _generate_code() -> str:
@@ -54,18 +56,31 @@ def _send_email_via_brevo(to_email: str, subject: str, text_body: str) -> bool:
     }
 
     try:
-        response = requests.post(BREVO_API_URL, json=payload, headers=headers, timeout=20)
-        response.raise_for_status()
-        return True
+        response = requests.post(BREVO_API_URL, json=payload, headers=headers, timeout=BREVO_HTTP_TIMEOUT)
     except requests.RequestException as exc:
-        logger.warning("Brevo email failed: %s", exc)
+        logger.error("Brevo API request error: %s", exc)
         return False
+
+    if not response.ok:
+        logger.error("Brevo API responded with %s: %s", response.status_code, response.text)
+        return False
+
+    logger.debug("Brevo email sent to %s", to_email)
+    return True
 
 
 def _send_email(to_email: str, subject: str, text_body: str) -> None:
     if _send_email_via_brevo(to_email, subject, text_body):
         return
-    send_mail(subject, text_body, settings.DEFAULT_FROM_EMAIL, [to_email])
+
+    if not BREVO_USE_SMTP_FALLBACK:
+        logger.error("Fallo el envio via Brevo y el fallback SMTP esta deshabilitado (destino=%s)", to_email)
+        return
+
+    try:
+        send_mail(subject, text_body, settings.DEFAULT_FROM_EMAIL, [to_email])
+    except Exception as exc:  # pragma: no cover
+        logger.error("SMTP fallback tambien fallo: %s", exc)
 
 
 def send_verification_email(user: User) -> EmailVerificationToken:
