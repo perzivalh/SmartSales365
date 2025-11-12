@@ -243,8 +243,8 @@ export function ProductsPage() {
             No hay productos registrados.
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto overflow-x-hidden thin-scrollbar">
-            <table className="w-full min-w-[900px] text-sm text-white/85">
+          <div className="flex-1 overflow-y-auto overflow-x-auto thin-scrollbar">
+            <table className="w-full min-w-[780px] text-sm text-white/85">
               <thead className="sticky top-0 z-10 bg-[#06152b]/90 text-[11px] font-semibold uppercase tracking-[0.32em] text-white/50 backdrop-blur">
                 <tr>
                   <th className="px-5 py-3 text-left">Producto</th>
@@ -263,7 +263,11 @@ export function ProductsPage() {
                   const originalPrice = Number(product.price);
                   const hasPromotion = Boolean(activePromotion) && finalPrice < originalPrice;
                   return (
-                  <tr key={product.id} className="border-b border-white/5 last:border-transparent transition hover:bg-white/5">
+                  <tr
+                    key={product.id}
+                    className="cursor-pointer border-b border-white/5 last:border-transparent transition hover:bg-white/5"
+                    onClick={() => handleEdit(product)}
+                  >
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         {product.cover_image_url ? (
@@ -304,19 +308,21 @@ export function ProductsPage() {
                     <td className="px-5 py-4 text-white/75">{product.stock}</td>
                     <td className="px-5 py-4">
                       <span
-                        className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] ${
-                          product.is_active ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"
+                        className={`inline-block h-3 w-3 rounded-full ${
+                          product.is_active ? "bg-green-400" : "bg-red-400"
                         }`}
-                      >
-                        {product.is_active ? "Publicado" : "Inactivo"}
-                      </span>
+                        aria-label={product.is_active ? "Activo" : "Inactivo"}
+                      />
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30 transition hover:bg-primary/90"
-                          onClick={() => handleEdit(product)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleEdit(product);
+                          }}
                           title="Editar producto"
                         >
                           <img src="/icons/edit.svg" alt="Editar" width={18} height={18} />
@@ -324,7 +330,10 @@ export function ProductsPage() {
                         <button
                           type="button"
                           className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-red-600 text-white shadow-lg shadow-red-600/40 transition hover:bg-red-500"
-                          onClick={() => handleDelete(product)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleDelete(product);
+                          }}
                           title="Eliminar producto"
                         >
                           <img src="/icons/delete.svg" alt="Eliminar" width={18} height={18} />

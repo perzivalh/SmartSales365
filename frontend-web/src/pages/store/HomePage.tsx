@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { FormEvent } from "react";
+import type { FormEvent, KeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
 
@@ -246,6 +246,13 @@ export function HomePage() {
     navigate(`/products/${productId}`);
   }
 
+  function handleProductCardKeyDown(event: KeyboardEvent<HTMLElement>, productId: string) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleOpenProduct(productId);
+    }
+  }
+
   function handlePrimaryAction() {
     if (isAuthenticated) {
       navigate("/admin/products");
@@ -448,17 +455,28 @@ export function HomePage() {
                 const originalPrice = pricing.originalPrice;
                 const hasPromotion = pricing.hasPromotion;
                 return (
-                  <article
-                    key={product.id}
-                    className="relative flex min-w-[300px] flex-shrink-0 snap-center gap-4 rounded-3xl border border-primary/35 bg-[rgba(7,26,52,0.88)] p-5 shadow-card transition hover:-translate-y-1 md:min-w-0 md:flex-shrink"
-                  >
-                    <div className="absolute right-4 top-4 z-20">
+                <article
+                  key={product.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleOpenProduct(product.id)}
+                  onKeyDown={(event) => handleProductCardKeyDown(event, product.id)}
+                  className="relative flex min-w-[300px] flex-shrink-0 snap-center gap-4 rounded-3xl border border-primary/35 bg-[rgba(7,26,52,0.88)] p-5 shadow-card transition hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#040d1f] md:min-w-0 md:flex-shrink"
+                >
+                    <div
+                      className="absolute right-4 top-4 z-20"
+                      onClickCapture={(event) => event.stopPropagation()}
+                      onKeyDownCapture={(event) => event.stopPropagation()}
+                    >
                       <FavoriteButton productId={product.id} size="sm" />
                     </div>
                     <button
                       type="button"
                       className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-[#041024]"
-                      onClick={() => handleOpenProduct(product.id)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleOpenProduct(product.id);
+                      }}
                     >
                       <img src={imageUrl} alt={product.name} className="h-full w-full object-cover" />
                     </button>
@@ -482,7 +500,10 @@ export function HomePage() {
                         <button
                           type="button"
                           className="rounded-full bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-lg shadow-primary/30 transition hover:scale-105"
-                          onClick={() => handleAddProductToCart(product)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleAddProductToCart(product);
+                          }}
                         >
                           Añadir
                         </button>
@@ -542,10 +563,18 @@ export function HomePage() {
               return (
                 <article
                   key={product.id}
-                  className="group relative flex min-w-[300px] flex-shrink-0 snap-center flex-col overflow-hidden rounded-[28px] border border-primary/30 bg-[rgba(6,18,36,0.95)] p-6 shadow-card transition hover:-translate-y-1 md:min-w-0 md:flex-shrink"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleOpenProduct(product.id)}
+                  onKeyDown={(event) => handleProductCardKeyDown(event, product.id)}
+                  className="group relative flex min-w-[300px] flex-shrink-0 snap-center flex-col overflow-hidden rounded-[28px] border border-primary/30 bg-[rgba(6,18,36,0.95)] p-6 shadow-card transition hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#040d1f] md:min-w-0 md:flex-shrink"
                 >
                   <img src={imageUrl} alt={product.name} className="absolute inset-0 h-full w-full object-cover opacity-20" />
-                  <div className="absolute right-4 top-4 z-20">
+                  <div
+                    className="absolute right-4 top-4 z-20"
+                    onClickCapture={(event) => event.stopPropagation()}
+                    onKeyDownCapture={(event) => event.stopPropagation()}
+                  >
                     <FavoriteButton productId={product.id} size="sm" />
                   </div>
                   <div className="relative z-10 flex h-full flex-col gap-4">
@@ -571,14 +600,20 @@ export function HomePage() {
                       <button
                         type="button"
                         className="flex-1 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-lg shadow-primary/30 transition hover:scale-105"
-                        onClick={() => handleAddProductToCart(product)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleAddProductToCart(product);
+                        }}
                       >
                         Añadir
                       </button>
                       <button
                         type="button"
                         className="rounded-full border border-white/25 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:bg-white/10"
-                        onClick={() => handleOpenProduct(product.id)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleOpenProduct(product.id);
+                        }}
                       >
                         Ver
                       </button>
@@ -671,7 +706,11 @@ export function HomePage() {
               return (
                 <article
                   key={product.id}
-                  className="group relative flex aspect-[3/4] flex-col overflow-hidden rounded-[30px] border border-white/10 bg-[#061327] shadow-[0_45px_90px_rgba(3,10,23,0.5)] transition-transform duration-500 hover:-translate-y-1 hover:shadow-[0_60px_120px_rgba(3,10,23,0.6)]"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleOpenProduct(product.id)}
+                  onKeyDown={(event) => handleProductCardKeyDown(event, product.id)}
+                  className="group relative flex aspect-[3/4] flex-col overflow-hidden rounded-[30px] border border-white/10 bg-[#061327] shadow-[0_45px_90px_rgba(3,10,23,0.5)] transition-transform duration-500 hover:-translate-y-1 hover:shadow-[0_60px_120px_rgba(3,10,23,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#040d1f]"
                 >
                   <div className="absolute inset-0">
                     <img
@@ -681,7 +720,11 @@ export function HomePage() {
                     />
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-[#041024] via-[#061a35]/65 to-transparent" />
-                  <div className="absolute right-4 top-4 z-20">
+                  <div
+                    className="absolute right-4 top-4 z-20"
+                    onClickCapture={(event) => event.stopPropagation()}
+                    onKeyDownCapture={(event) => event.stopPropagation()}
+                  >
                     <FavoriteButton productId={product.id} size="sm" />
                   </div>
                   <div className="relative z-10 flex h-full flex-col justify-between p-6">
@@ -716,14 +759,20 @@ export function HomePage() {
                         <button
                           type="button"
                           className="flex items-center justify-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:bg-white/20"
-                          onClick={() => handleOpenProduct(product.id)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleOpenProduct(product.id);
+                          }}
                         >
                           Ver
                         </button>
                         <button
                           type="button"
                           className="flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-lg shadow-primary/30 transition hover:scale-105"
-                          onClick={() => handleAddProductToCart(product)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleAddProductToCart(product);
+                          }}
                         >
                           Añadir
                         </button>

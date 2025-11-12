@@ -216,13 +216,12 @@ export function BitacoraPage() {
             </div>
           ) : (
             <div className="max-h-[55vh] overflow-y-auto overflow-x-auto thin-scrollbar">
-              <table className="min-w-[880px] text-sm text-white/85">
+              <table className="min-w-[760px] text-sm text-white/85">
                 <thead className="sticky top-0 z-10 bg-[#06152b]/90 text-[11px] font-semibold uppercase tracking-[0.32em] text-white/50 backdrop-blur">
                   <tr>
                     <th className="px-5 py-3 text-left">Fecha</th>
                     <th className="px-5 py-3 text-left">Usuario</th>
                     <th className="px-5 py-3 text-left">Evento</th>
-                    <th className="px-5 py-3 text-left">Recurso</th>
                     <th className="px-5 py-3 text-left">Descripcion</th>
                     <th className="px-5 py-3 text-left">Metadata</th>
                   </tr>
@@ -242,21 +241,22 @@ export function BitacoraPage() {
                         <div className="text-sm font-semibold text-white">{log.actor_name ?? "Sistema"}</div>
                         <div className="text-xs text-white/45">{log.actor_email ?? "Sin correo"}</div>
                       </td>
-                      <td className="px-5 py-4">
-                        <span className="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/75">
-                          {eventLabels[log.event_type]}
+                    <td className="px-5 py-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-white/60">
+                      {eventLabels[log.event_type]}
+                    </td>
+                    <td className="px-5 py-4 text-sm text-white/85">
+                      {log.description || "—"}
+                      {log.entity_type || log.entity_id ? (
+                        <span className="mt-2 block text-[10px] uppercase tracking-[0.35em] text-white/35">
+                          {log.entity_type ?? "Recurso"} · {log.entity_id ?? "Sin ID"}
                         </span>
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="text-sm font-semibold text-white">{log.entity_type || "—"}</div>
-                        <div className="text-xs text-white/45">{log.entity_id || "—"}</div>
-                      </td>
-                      <td className="px-5 py-4 text-sm text-white/85">{log.description}</td>
-                      <td className="px-5 py-4 text-xs text-white/60">
-                        <span
-                          style={{
-                            display: "-webkit-box",
-                            WebkitLineClamp: 3,
+                      ) : null}
+                    </td>
+                    <td className="px-5 py-4 text-xs text-white/60">
+                      <span
+                        style={{
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
                             WebkitBoxOrient: "vertical",
                             overflow: "hidden",
                           }}
